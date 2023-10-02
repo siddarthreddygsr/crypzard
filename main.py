@@ -14,12 +14,11 @@ class NetworkPage(QWidget):
 
         network_label = QLabel("Network")
         network_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        network_label.setStyleSheet(" padding: 0px;font-size:24px;")
+        network_label.setStyleSheet("background-color: #232629;padding: 0px;font-size:24px;")
         network_label.setFixedHeight(50)
         network_layout.addWidget(network_label)
 
         ufw_section_layout = QHBoxLayout()
-        # ufw_section_layout.SetF
         ufw_label = QLabel("Ubuntu FireWall")
         ufw_label.setStyleSheet("color: white; background-color: #31363b;font-size: 18px;")
 
@@ -27,17 +26,31 @@ class NetworkPage(QWidget):
         ufw_toggle.setChecked(self.isUFWActive())  # Call isUFWActive to set the initial state
         ufw_toggle.clicked.connect(self.toggleUFW)  # Connect the toggle action
         ufw_label.setFixedWidth(285)
-        # ufw_toggle.setFixedWidth(285)
         ufw_section_layout.addWidget(ufw_label)
         ufw_section_layout.addWidget(ufw_toggle)
         ufw_section_layout.addStretch(1)  # Pushes the toggle button to the right
-        # ufw_section_layout
         network_layout.addLayout(ufw_section_layout)
 
         # Add other content to the NetworkPage
-        network_layout.addWidget(QLabel("Network Page Content"))
-        self.setStyleSheet("background-color: #232629;")
-        self.setLayout(network_layout)
+        for i in range(2):  # Add some content to demonstrate scrolling
+            network_layout.addWidget(QLabel(f"Network Page Content {i}"))
+
+        content_widget = QWidget()  # Create a widget to hold the content
+        content_widget.setLayout(network_layout)
+
+        scroll_area = QScrollArea()  # Create a scroll area
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)  # Show vertical scrollbar
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)  # Hide horizontal scrollbar
+        scroll_area.setWidget(content_widget)  # Set the content widget for the scroll area
+
+        main_layout = QVBoxLayout()
+        main_layout.addWidget(scroll_area)
+        self.setLayout(main_layout)
+        self.setStyleSheet("background-color: #31363b;")
+        # network_layout.addWidget(QLabel("Network Page Content"))
+        # self.setStyleSheet("background-color: #232629;")
+        # self.setLayout(network_layout)
 
     def isUFWActive(self):
         try:
