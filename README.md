@@ -2,3 +2,4 @@
 ![UI Image](images/UIImage.png)
 ![UI Image](images/updates.png)
 ![Firewall UI](images/firewallUI.png)
+![storage demo UI](images/storage.png)
