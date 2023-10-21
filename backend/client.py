@@ -1,37 +1,29 @@
-import socket
+import socketio
 import threading
 
-# Create a socket and connect to the server
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client_socket.connect(('127.0.0.1', 12345))  # Replace 'server_ip' with the actual IP address of your server
+sio = socketio.Client()
 
-# Create a function to send messages
+username = input("Enter your username: ")
+
+@sio.event
+def connect():
+    print('Connected to the server')
+    sio.emit('connect', username, namespace='/')
+
+@sio.event
+def private_message(data):
+    print(f'{data["sender"]}: {data["message"]}')
+
 def send_message():
     while True:
         message = input()
-        client_socket.send(message.encode('utf-8'))
+        if message:
+            receiver = input("Enter the receiver's username: ")
+            sio.emit('private_message', {'sender': username, 'receiver': receiver, 'message': message}, namespace='/')
 
-# Create a thread for sending messages
-send_thread = threading.Thread(target=send_message)
-send_thread.start()
-
-# Create a function to receive and display messages
-def receive_message():
-    while True:
-        try:
-            message = client_socket.recv(1024).decode('utf-8')
-            print(message)
-        except:
-            print("An error occurred.")
-            client_socket.close()
-            break
-
-# Create a thread for receiving messages
-receive_thread = threading.Thread(target=receive_message)
-receive_thread.start()
-
-# Run the CLI application
-if __name__ == "__main__":
-    receive_thread.join()
-    send_thread.join()
-
+if __name__ == '__main__':
+    sio.connect('http://127.0.0.1:5000', namespaces=['/'], headers={'username': username})
+    t = threading.Thread(target=send_message)
+    t.daemon = True
+    t.start()
+    sio.wait()
